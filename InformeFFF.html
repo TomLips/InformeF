@@ -3,338 +3,773 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indicadores de Bitcoin y Bitcoin Cash</title>
+    <title>Informe de Riesgo vs Optimismo de Mercado</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: sans-serif;
+            background: #f4f4f4;
             margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #333;
+            padding: 15px;
+        }
+        h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            margin-top: 15px;
+            margin-bottom: 0;
+            color: #222;
+        }
+        .subtitulo {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            margin-top: 5px;
+        }
+        .espacio-linea {
+            height: 10px;
         }
         .container {
-            display: flex;
-            justify-content: center;
-            max-width: 617px;
+            background: #fff;
+            padding: 0 0 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            margin: 15px auto;
             width: 100%;
-            margin: 0 auto;
+            max-width: 900px;
+            box-sizing: border-box;
         }
-        .chart {
-            text-align: center;
-            padding: 0;
-            margin: 0 1px;
-            flex: 1;
-            min-width: 45px;
-            position: relative;
+        .antigua, .actual, .riesgo-global {
+            box-sizing: border-box;
+            width: 100%;
+            padding-left: 15px;
+            padding-right: 15px;
         }
-        .chart-label {
+        .antigua {
+            background: #f9f9f9;
+            padding-top: 20px;
+            padding-bottom: 15px;
+            border-radius: 12px 12px 0 0;
+        }
+        .contexto {
             font-size: 1.1rem;
-            margin-bottom: 5px;
-            position: relative;
+            color: #555;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .actual {
+            background: #e8eaed;
+            padding-top: 15px;
+            padding-bottom: 20px;
+        }
+        .riesgo-global {
+            background: #d6d8dc;
+            padding-top: 15px;
+            padding-bottom: 20px;
+            border-radius: 0 0 12px 12px;
+            margin-bottom: 0;
+        }
+        .mini-section {
+            font-size: 1.0rem;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .media-section {
+            font-size: 1.0rem;
+            color: #666;
+            margin-bottom: 6px;
             font-weight: 500;
         }
-        .chart-label::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
+        .mini-barra, .final-barra, .global-barra {
             width: 100%;
-            height: 1px;
-            background-color: #bbb;
-        }
-        .bar-container {
-            height: 280px;
+            margin: 0 auto 12px auto;
             position: relative;
-            border-left: 1px solid #bbb;
-            border-bottom: 1px solid #bbb;
-            width: 100%;
-            display: flex;
-            justify-content: center;
+            box-sizing: border-box;
+            display: block;
         }
-        .bar {
+        .mini-barra {
+            height: 12px;
+            background: #e9e9e9;
+            border-radius: 6px;
+        }
+        .final-barra {
+            height: 24px;
+            background: #f1f3f7;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        }
+        .global-barra {
+            height: 24px;
+            background: #e2e4e7;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        }
+        .mini-indicador, .final-indicador, .global-indicador {
             position: absolute;
-            bottom: 0;
-            width: 30%;
+            top: 0;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #00cc00; /* Color por defecto, ser· sobrescrito seg˙n lÛgica */
-            transition: height 0.5s ease;
-            border-radius: 3px;
+            background: #888;
         }
-        .bar.blue {
-            background-color: #0066cc; /* Color fijo para BTC Hoy */
+        .mini-indicador {
+            width: 2px;
+            height: 12px;
         }
-        .y-axis {
+        .final-indicador, .global-indicador {
+            width: 3px;
+            height: 24px;
+            background: #444;
+        }
+        .mini-valor, .final-valor {
             position: absolute;
-            left: 0;
-            width: 60px;
-            text-align: left;
-            font-size: 0.8rem;
             top: 0;
             height: 100%;
+            background-color: inherit;
+            max-width: 50%;
         }
-        .y-axis span {
-            display: block;
-            height: 56px;
-            line-height: 56px;
-            white-space: nowrap;
+        .global-valor {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background-color: inherit;
+            border-radius: 12px;
         }
-        .value {
-            display: none;
+        .divider {
+            border: none;
+            border-top: 1px solid #e0e0e0;
+            margin: 14px 0 16px 0;
         }
-        .info {
-            margin-top: 5px;
-            font-size: 0.75rem;
-            color: #555;
-            white-space: nowrap;
-        }
-        .summary {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            text-align: left;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .update-info {
-            margin-top: 10px;
-            font-size: 0.8rem;
+        .actualmente {
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            color: #3b3b3b;
+            font-weight: bold;
+            margin: 8px 0 14px 0;
             text-align: center;
-            color: #666;
+            line-height: 1.4;
+        }
+        .final-section, .global-section {
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            color: #222;
+            font-weight: 500;
+        }
+        .subcomentario {
+            font-size: 0.92rem;
+            font-style: italic;
+            color: #555;
+            font-weight: 400;
+        }
+        .separador {
+            margin: 0 5px;
+            color: #999;
+        }
+        .igual {
+            margin: 0 5px;
+            color: #555;
+        }
+        .valor-rojo {
+            color: #d10000 !important;
+            font-weight: bold;
+        }
+        .valor-verde {
+            color: #008000 !important;
+            font-weight: bold;
         }
         .disclaimer {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #fff3e6;
-            border: 1px solid #ffcc99;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            margin: 25px auto 5px auto;
+            max-width: 100%;
+            color: #666;
+            font-size: 0.95rem;
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 15px;
             text-align: center;
-            color: #744700;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.02);
         }
-        .viptrend-info {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #000;
-            border: 1px solid #333;
-            border-radius: 6px;
+        .meta {
+            max-width: 100%;
+            margin: 0 auto 15px auto;
+            color: #444;
+            font-size: 0.96rem;
+            text-align: center;
+        }
+        .riesgo-bajo {
+            background-color: #008000 !important;
+        }
+        .riesgo-alto {
+            background-color: #d10000 !important;
+        }
+        .riesgo-muy-alto {
+            background-color: #b00000 !important;
+        }
+        .riesgo-maximo {
+            background-color: #800000 !important;
+        }
+        .texto-riesgo-bajo {
+            color: #008000 !important;
+        }
+        .texto-riesgo-alto {
+            color: #d10000 !important;
+        }
+        .texto-riesgo-muy-alto {
+            color: #b00000 !important;
+        }
+        .texto-riesgo-maximo {
+            color: #800000 !important;
+            font-weight: bold !important;
+        }
+        .alerta-maxima-texto {
+            text-align: right;
             font-size: 0.8rem;
+            color: #800000;
+            font-weight: bold;
+            margin-top: -15px;
+            margin-bottom: 10px;
+            padding-right: 15px;
+        }
+        .resumen-comentado {
+            background: #333;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 900px;
+            text-align: center;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .resumen-titulo {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
             text-align: center;
             color: #fff;
-            font-weight: normal;
         }
-        .viptrend-info h3 {
-            margin: 0 0 5px 0;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #ddd;
-        }
-        .authors {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #e6f3ff;
-            border: 1px solid #99ccff;
-            border-radius: 6px;
-            font-size: 0.8rem;
+        .error-api {
+            color: #d10000;
+            font-weight: bold;
             text-align: center;
-            color: #004d99;
+            margin: 10px 0;
+        }
+        .advertencia {
+            background-color: #FFF8E1;
+            color: #000;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 15px auto;
+            max-width: 900px;
+            text-align: center;
+            font-weight: normal;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
         }
         @media (max-width: 600px) {
-            .container {
-                flex-wrap: nowrap;
-                overflow-x: auto;
+            h2 {
+                font-size: 1.5rem;
             }
-            .chart {
-                min-width: 35px;
+            .final-section, .global-section {
+                font-size: 1.05rem;
             }
-            .bar-container {
-                min-width: 35px;
+            .subcomentario {
+                font-size: 0.85rem;
             }
-            .bar {
-                width: 40%;
+            .antigua, .actual, .riesgo-global {
+                padding-left: 12px;
+                padding-right: 12px;
             }
-            .y-axis {
-                width: 50px;
+            .alerta-maxima-texto {
                 font-size: 0.7rem;
+                margin-top: -10px;
             }
-            .chart-label {
-                font-size: 0.9rem;
-            }
-            .info {
-                font-size: 0.7rem;
+            .resumen-comentado {
+                padding: 12px;
+                font-size: 0.85rem;
             }
         }
     </style>
 </head>
 <body>
+    <h2>Informe de Riesgo vs Optimismo de Mercado</h2>
+    <div class="subtitulo">actualizado cada 2 horas</div>
+    <div class="espacio-linea"></div>
+    
     <div class="container">
-        <!-- Gr·fico 1: M·ximo HistÛrico (ATH) -->
-        <div class="chart">
-            <div class="chart-label">ATH (22 mayo)</div>
-            <div class="bar-container">
-                <div class="y-axis">
-                    <span>$120,000</span>
-                    <span>$110,000</span>
-                    <span>$100,000</span>
-                    <span>$90,000</span>
-                    <span>$80,000</span>
-                </div>
-                <div class="bar" id="ath-bar" style="height: 0%;"></div>
-                <div class="value" id="ath-value">Cargando...</div>
-            </div>
-            <div class="info" id="ath-price">M·ximo HistÛrico: $111814.00</div>
+      <div class="antigua">
+        <div class="contexto">RETROSPECTIVA, CONTEXTO DE 'EL MERCADO'</div>
+        
+        <div class="mini-section" id="mes-actual-texto">= Cargando datos...</div>
+        <div class="mini-barra" id="mes-actual-barra">
+            <div class="mini-indicador"></div>
+            <div class="mini-valor" id="mes-actual-valor"></div>
         </div>
-
-        <!-- Gr·fico 2: Precio Actual de Bitcoin -->
-        <div class="chart">
-            <div class="chart-label">BTC Hoy</div>
-            <div class="bar-container">
-                <div class="bar blue" id="price-bar" style="height: 0%;"></div>
-            </div>
-            <div class="info" id="btc-price">Precio: Cargando...</div>
+        
+        <div class="mini-section" id="ultimos-3-meses-texto">= Cargando datos...</div>
+        <div class="mini-barra" id="ultimos-3-meses-barra">
+            <div class="mini-indicador"></div>
+            <div class="mini-valor" id="ultimos-3-meses-valor"></div>
         </div>
-
-        <!-- Gr·fico 3: PREVISI”N -->
-        <div class="chart">
-            <div class="chart-label">PREVISI”N</div>
-            <div class="bar-container">
-                <div class="bar" id="combined-bar" style="height: 0%;"></div>
-            </div>
-            <div class="info">Seg˙n indicador VipTrend-Bitcoin</div>
+        
+        <div class="mini-section" id="ano-actual-texto">= Cargando datos...</div>
+        <div class="mini-barra" id="ano-actual-barra">
+            <div class="mini-indicador"></div>
+            <div class="mini-valor" id="ano-actual-valor"></div>
         </div>
+        
+        <hr class="divider" />
+        
+        <div class="media-section" id="media-texto">= Cargando datos...</div>
+        <div class="mini-barra" id="media-barra">
+            <div class="mini-indicador"></div>
+            <div class="mini-valor" id="media-valor"></div>
+        </div>
+      </div>
+      
+      <div class="actual">
+        <div class="actualmente">CORTO PLAZO (d√≠as o pocas semanas) | Muestran el valor de previsi√≥n general y en los dos primeros apartados tambi√©n incluye el valor Intrad√≠a (<i>letra cursiva</i>), todo actualizado cada 2 horas</div>
+        
+        <div class="final-section" id="riesgo-bolsa-texto">Cargando datos...</div>
+        <div class="final-barra" id="riesgo-bolsa-barra">
+            <div class="final-indicador"></div>
+            <div class="final-valor" id="riesgo-bolsa-valor"></div>
+        </div>
+        
+        <div class="final-section" id="riesgo-bitcoin-texto">Cargando datos...</div>
+        <div class="final-barra" id="riesgo-bitcoin-barra">
+            <div class="final-indicador"></div>
+            <div class="final-valor" id="riesgo-bitcoin-valor"></div>
+        </div>
+        
+        <div class="final-section" id="riesgo-bonos-texto">Cargando datos...</div>
+        <div class="final-barra" id="riesgo-bonos-barra">
+            <div class="final-indicador"></div>
+            <div class="final-valor" id="riesgo-bonos-valor"></div>
+        </div>
+      </div>
+      
+      <div class="riesgo-global">
+        <div class="global-section" id="riesgo-global-texto">Cargando datos...</div>
+        <div class="global-barra" id="riesgo-global-barra">
+            <div class="global-indicador" style="display: none;"></div>
+            <div class="global-valor" id="riesgo-global-valor"></div>
+        </div>
+        <div class="alerta-maxima-texto">Valor de M√ÅXIMA ALERTA >= 84%</div>
+      </div>
     </div>
-
-    <!-- Resumen Comentado -->
-    <div class="summary" id="summary">Cargando resumen...</div>
-
-    <!-- InformaciÛn de actualizaciÛn -->
-    <div class="update-info" id="update-info">Cargando informaciÛn de actualizaciÛn...</div>
-
-    <!-- Descargo de Responsabilidad -->
-    <div class="disclaimer">Descargo de Responsabilidad: Esto es un ejemplo educativo y nunca se tomar· para trading ni inversiones</div>
-
-    <!-- InformaciÛn sobre VipTrend-Bitcoin -->
-    <div class="viptrend-info">
-        <h3>Sobre VipTrend-Bitcoin</h3>
-        Nuestro indicador prevÈ los posibles movimientos alcistas o bajistas de Bitcoin calculando si se acerca o aleja del actual ATH de Bitcoin
+    
+    <div class="resumen-comentado" id="resumen-comentado">
+        <div class="resumen-titulo">RESUMEN COMENTADO</div>
+        <div id="resumen-contenido">Analizando los datos del mercado...</div>
     </div>
-
-    <!-- Autores -->
-    <div class="authors">
-        Desarrollado por: Tom Lips & VipTrader
+    
+    <div class="advertencia">
+        ADVERTENCIA IMPORTANTE: Estos indicadores funcionan de lunes a viernes, excepto los relacionados con Bitcoin que tambi√©n se actualizan durante los fines de semana.
     </div>
+    <div class="disclaimer">
+        <b>Descargo de responsabilidad:</b> No es ninguna recomendaci√≥n de inversi√≥n ni trading, es tan s√≥lo educativo y para valoraci√≥n experimental sobre previsi√≥n de mercado.
+    </div>
+    
+    <div class="meta" id="meta-info"></div>
 
     <script>
-        // FunciÛn para obtener datos de Bitcoin y Bitcoin Cash
-        async function obtenerDatosCripto() {
+        // ========== FUNCI√ìN NUEVA: VARIACI√ìN DIARIA DE GBP/JPY (24h) ========== //
+        async function obtenerIntradiaGBPJPY() {
             try {
-                // Usar valor fijo para ATH
-                const btcATH = 111814.00;
-
-                // Obtener datos histÛricos de Bitcoin para estimar YTD (365 dÌas)
-                const btcHistoryResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365');
-                if (!btcHistoryResponse.ok) throw new Error('Error en API CoinGecko para historial BTC: ' + btcHistoryResponse.statusText);
-                const btcHistoryData = await btcHistoryResponse.json();
-                console.log('BTC History Data:', btcHistoryData);
-                const prices = btcHistoryData.prices;
-                const startPrice = prices[0][1];
-                const currentPrice = prices[prices.length - 1][1];
-                const btcYTD = ((currentPrice / startPrice) - 1) * 100;
-
-                // Obtener datos actuales de Bitcoin (precio)
-                const btcResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin');
-                if (!btcResponse.ok) throw new Error('Error en API CoinGecko para Bitcoin: ' + btcResponse.statusText);
-                const btcData = await btcResponse.json();
-                console.log('BTC Data:', btcData);
-                const btcPrice = btcData.market_data.current_price.usd;
-
-                // Obtener datos de Bitcoin Cash (cambio porcentual 24h)
-                const bchResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin-cash');
-                if (!bchResponse.ok) throw new Error('Error en API CoinGecko para Bitcoin Cash: ' + bchResponse.statusText);
-                const bchData = await bchResponse.json();
-                console.log('BCH Data:', bchData);
-                const bchChange24h = bchData.market_data.price_change_percentage_24h;
-
-                // Calcular la previsiÛn seg˙n la lÛgica original
-                const adjustmentFactor = bchChange24h >= 0 ? 3 : 2;
-                const adjustedBchChange = bchChange24h / adjustmentFactor;
-                const combinedPrice = btcPrice + (adjustedBchChange / 100 * btcPrice);
-                const combinedChange = adjustedBchChange; // Usado para determinar el color de la previsiÛn
-
-                // Escalar las alturas de las barras seg˙n la escala ($80,000 a $120,000)
-                const maxHeight = 280;
-                const range = 40000; // $120,000 - $80,000
-                const athBarHeight = Math.min(((btcATH - 80000) / range) * 100, 100); // 79.535%
-                const priceBarHeight = Math.min(((btcPrice - 80000) / range) * 100, 100);
-                const combinedBarHeight = Math.min(((combinedPrice - 80000) / range) * 100, 100);
-
-                // Validar valores antes de actualizar
-                if (isNaN(btcPrice) || isNaN(btcATH) || isNaN(combinedPrice)) {
-                    throw new Error('Valores inv·lidos en los datos: btcPrice, btcATH, o combinedPrice no son n˙meros.');
+                const ahora = new Date();
+                const ayer = new Date(ahora.getTime() - 24 * 60 * 60 * 1000);
+                
+                const [precioAyer, precioHoy] = await Promise.all([
+                    fetch(`https://api.frankfurter.app/${ayer.toISOString().slice(0, 10)}?from=GBP&to=JPY`),
+                    fetch(`https://api.frankfurter.app/latest?from=GBP&to=JPY`)
+                ]);
+                
+                if (!precioAyer.ok || !precioHoy.ok) throw new Error("Error en API Frankfurter");
+                
+                const dataAyer = await precioAyer.json();
+                const dataHoy = await precioHoy.json();
+                
+                if (!dataAyer.rates?.JPY || !dataHoy.rates?.JPY) {
+                    throw new Error("Datos de GBP/JPY incompletos");
                 }
-
-                // Actualizar gr·ficos
-                document.getElementById('ath-bar').style.height = `${athBarHeight}%`; // ATH siempre verde por defecto
-                document.getElementById('ath-value').textContent = `$${btcATH.toFixed(2)}`;
-                document.getElementById('ath-price').textContent = `M·ximo HistÛrico: $${btcATH.toFixed(2)}`;
-
-                document.getElementById('price-bar').style.height = `${priceBarHeight}%`; // BTC Hoy siempre azul
-                document.getElementById('btc-price').textContent = `Precio: $${btcPrice.toFixed(2)}`;
-
-                document.getElementById('combined-bar').style.height = `${combinedBarHeight}%`; // PREVISI”N: verde si positiva, roja si negativa
-                document.getElementById('combined-bar').style.backgroundColor = combinedChange >= 0 ? '#00cc00' : '#cc0000';
-
-                // Generar Resumen Comentado din·mico
-                let summaryText = '';
-                const priceVsATH = (btcPrice / btcATH) * 100;
-                const isNearATH = priceVsATH > 90;
-                const isAboveCurrent = combinedBarHeight > priceBarHeight;
-
-                if (isNearATH) {
-                    if (isAboveCurrent) {
-                        summaryText = 'El precio de Bitcoin est· cerca de su m·ximo histÛrico (ATH). La previsiÛn sugiere una tendencia al alza, con posibilidad de superar el ATH en el corto plazo.';
-                    } else {
-                        summaryText = 'El precio de Bitcoin est· cerca de su m·ximo histÛrico (ATH), pero la previsiÛn indica resistencia, sugiriendo un posible retroceso o consolidaciÛn en el precio.';
-                    }
-                } else {
-                    if (isAboveCurrent) {
-                        summaryText = 'El precio de Bitcoin est· lejos de su m·ximo histÛrico (ATH). La previsiÛn muestra una tendencia al alza, indicando un posible acercamiento gradual al ATH.';
-                    } else {
-                        summaryText = 'El precio de Bitcoin est· lejos de su m·ximo histÛrico (ATH). La previsiÛn sugiere un retroceso adicional en el precio a corto plazo.';
-                    }
-                }
-
-                document.getElementById('summary').textContent = `Resumen Comentado: ${summaryText}`;
-
-                // Calcular y mostrar informaciÛn de actualizaciÛn
-                const now = new Date();
-                const lastUpdate = now.toLocaleTimeString('es-ES', { timeZone: 'CET', hour: '2-digit', minute: '2-digit' }) + ' CEST';
-                const nextUpdate = new Date(now.getTime() + 35 * 60 * 1000).toLocaleTimeString('es-ES', { timeZone: 'CET', hour: '2-digit', minute: '2-digit' }) + ' CEST';
-                document.getElementById('update-info').textContent = `Actualiza cada 35 minutos | ⁄ltima actualizaciÛn: ${lastUpdate} | PrÛxima actualizaciÛn: ${nextUpdate}`;
-
-                console.log(`BTC Price: $${btcPrice}, BCH Change: ${bchChange24h}%, Adjusted: ${adjustedBchChange}%, Combined Price: $${combinedPrice.toFixed(2)}, Heights: ATH=${athBarHeight}%, BTC=${priceBarHeight}%, Combined=${combinedBarHeight}%`);
-
+                
+                return ((dataHoy.rates.JPY - dataAyer.rates.JPY) / dataAyer.rates.JPY) * 100;
             } catch (error) {
-                console.error('Error detallado:', error.message);
-                document.getElementById('ath-value').textContent = 'Error';
-                document.getElementById('ath-price').textContent = 'M·ximo HistÛrico: Error';
-                document.getElementById('btc-price').textContent = 'Precio: Error';
-                document.getElementById('summary').textContent = `Resumen Comentado: Error al cargar datos - ${error.message}`;
-                document.getElementById('update-info').textContent = 'InformaciÛn de actualizaciÛn: Error';
+                console.error("Error en obtenerIntradiaGBPJPY:", error);
+                return NaN;
             }
         }
 
-        // Ejecutar al cargar la p·gina
-        document.addEventListener('DOMContentLoaded', obtenerDatosCripto);
+        // ========== FUNCIONES ORIGINALES (CON AJUSTES) ========== //
+        async function obtenerAcumulado(from, to, fechaInicio, fechaFin) {
+            try {
+                const responseInicio = await fetch(`https://api.frankfurter.app/${fechaInicio.toISOString().slice(0, 10)}?from=${from}&to=${to}`);
+                if (!responseInicio.ok) throw new Error("Error en API Frankfurter (inicio)");
+                const dataInicio = await responseInicio.json();
+                const valorInicio = dataInicio.rates[to];
 
-        // Actualizar cada 35 minutos
-        setInterval(obtenerDatosCripto, 35 * 60 * 1000);
+                const responseFin = await fetch(`https://api.frankfurter.app/${fechaFin.toISOString().slice(0, 10)}?from=${from}&to=${to}`);
+                if (!responseFin.ok) throw new Error("Error en API Frankfurter (fin)");
+                const dataFin = await responseFin.json();
+                const valorFin = dataFin.rates[to];
+
+                return ((valorFin - valorInicio) / valorInicio) * 100;
+            } catch (error) {
+                console.error(`Error en obtenerAcumulado(${from}/${to}):`, error);
+                return NaN;
+            }
+        }
+
+        async function obtenerIntradiaBCHUSD() {
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin-cash/market_chart?vs_currency=usd&days=2');
+                if (!res.ok) throw new Error("Error en API CoinGecko");
+                const data = await res.json();
+                const precios = data.prices;
+                
+                const ahora = new Date().getTime();
+                const hace24h = ahora - (24 * 60 * 60 * 1000);
+                
+                let precioAyer = precios[0][1];
+                let precioHoy = precios[precios.length - 1][1];
+                
+                for (let i = 0; i < precios.length; i++) {
+                    if (Math.abs(precios[i][0] - hace24h) < (12 * 60 * 60 * 1000)) {
+                        precioAyer = precios[i][1];
+                        break;
+                    }
+                }
+                
+                return ((precioHoy - precioAyer) / precioAyer) * 100;
+            } catch (error) {
+                console.error("Error en obtenerIntradiaBCHUSD:", error);
+                return NaN;
+            }
+        }
+
+        function getColorBarra(valor) {
+            return valor < 0 ? "#d10000" : "#008000";
+        }
+
+        function getClaseColor(valor) {
+            return valor < 0 ? "valor-rojo" : "valor-verde";
+        }
+
+        function getComentarioVariable1(acumulado) {
+            if (isNaN(acumulado)) return "Datos no disponibles";
+            if (acumulado < 0) {
+                return "MALO para Bolsa y Bitcoin";
+            } else if (acumulado > 0) {
+                return "BUENO para Bolsa y Bitcoin";
+            } else {
+                return "Sin se√±al clara";
+            }
+        }
+
+        function getComentarioBolsa(acumulado) {
+            if (isNaN(acumulado)) return "Datos no disponibles";
+            if (acumulado < 0) {
+                return "MALO para Bolsa";
+            } else if (acumulado > 0) {
+                return "BUENO para Bolsa";
+            } else {
+                return "Sin se√±al clara";
+            }
+        }
+
+        function getComentarioRefugio(valorReal) {
+            if (isNaN(valorReal)) return "Datos no disponibles";
+            if (valorReal < 0) {
+                return "Favorable para Bonos y D√≥lar";
+            } else if (valorReal > 0) {
+                return "MALO para Bonos y D√≥lar";
+            } else {
+                return "Sin se√±al clara";
+            }
+        }
+
+        function getComentarioBitcoin(valor) {
+            if (isNaN(valor)) return "";
+            if (valor < 0) return "MALO para Bitcoin";
+            if (valor > 0) return "BUENO para Bitcoin";
+            return "Sin se√±al clara";
+        }
+
+        function formatoFechaCEST(date) {
+            const opciones = {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false, timeZone: 'Europe/Madrid'
+            };
+            return date.toLocaleString('es-ES', opciones) + ' CEST';
+        }
+
+        function formatoHoraProxima(date) {
+            const next = new Date(date.getTime() + 2 * 60 * 60 * 1000); // 2 horas
+            const opciones = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Europe/Madrid' };
+            return next.toLocaleString('es-ES', opciones) + ' CEST';
+        }
+
+        function generarResumenComentado(media, riesgoBolsa, riesgoBitcoin, riesgoBonos, riesgoGlobal) {
+            const resumen = document.getElementById('resumen-contenido');
+            let textoResumen = "";
+            
+            if (isNaN(media) || isNaN(riesgoGlobal)) {
+                textoResumen = "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+            } else {
+                if (media < 0) {
+                    textoResumen = "<b>El Mercado no es nada Optimista</b> y predomina el Valor Refugio. ";
+                    textoResumen += "Se prev√©n ventas en los activos convencionales (excepto en Bonos) y posibilidad de aumento del precio del D√≥lar. ";
+                } else if (media > 0) {
+                    textoResumen = "<b>El Mercado muestra signos de Optimismo</b>. ";
+                    textoResumen += "Se prev√©n compras en activos de riesgo como acciones y Bitcoin, con posible disminuci√≥n en la demanda de activos refugio. ";
+                } else {
+                    textoResumen = "<b>El Mercado no muestra una tendencia clara</b>. ";
+                    textoResumen += "Se recomienda cautela y diversificaci√≥n de inversiones. ";
+                }
+                
+                if (!isNaN(riesgoBonos)) {
+                    if (riesgoBonos > 0) {
+                        textoResumen += "<b>Los Bonos</b> muestran fuerte demanda como activo refugio, siendo propicio para compras seg√∫n los indicadores actuales. ";
+                        textoResumen += "<b>El D√≥lar</b> tambi√©n aparece como activo refugio atractivo en el contexto actual. ";
+                    } else if (riesgoBonos < 0) {
+                        textoResumen += "<b>Los Bonos</b> muestran poca demanda seg√∫n los indicadores, no siendo propicio para compras en el contexto actual. ";
+                    }
+                }
+                
+                if (riesgoGlobal >= 84) {
+                    textoResumen += "<b>ALERTA M√ÅXIMA:</b> El riesgo global est√° en niveles cr√≠ticos, lo que podr√≠a indicar turbulencias en los mercados financieros. ";
+                } else if (riesgoGlobal >= 69) {
+                    textoResumen += "<b>ALERTA:</b> El riesgo global es muy alto, sugiriendo precauci√≥n en las inversiones. ";
+                } else if (riesgoGlobal >= 35) {
+                    textoResumen += "El riesgo global es moderado-alto, con algunas se√±ales de advertencia a considerar. ";
+                } else {
+                    textoResumen += "El riesgo global es bajo, indicando un entorno de mercado m√°s estable y predecible. ";
+                }
+                
+                if (media < 0 && riesgoGlobal > 69) {
+                    textoResumen += "En el escenario actual, se recomienda enfoque defensivo con mayor peso en activos refugio.";
+                } else if (media > 0 && riesgoGlobal < 35) {
+                    textoResumen += "En el escenario actual, podr√≠a considerarse aumentar exposici√≥n a activos de riesgo con gesti√≥n adecuada.";
+                } else {
+                    textoResumen += "Se recomienda analizar cada activo individualmente, diversificar y mantener posiciones equilibradas.";
+                }
+            }
+            
+            resumen.innerHTML = textoResumen;
+        }
+
+        async function actualizarDatos() {
+            const hoy = new Date();
+            const a√±o = hoy.getFullYear();
+            const mes = hoy.getMonth() + 1;
+
+            const fechaInicioMes = new Date(a√±o, mes - 1, 1);
+            const fechaInicio3Meses = new Date(a√±o, mes - 4, 1);
+            const fechaInicioA√±o = new Date(a√±o, 0, 1);
+
+            document.getElementById('mes-actual-texto').textContent = "= Obteniendo datos...";
+            document.getElementById('ultimos-3-meses-texto').textContent = "= Obteniendo datos...";
+            document.getElementById('ano-actual-texto').textContent = "= Obteniendo datos...";
+            document.getElementById('media-texto').textContent = "= Obteniendo datos...";
+            document.getElementById('riesgo-bolsa-texto').textContent = "Obteniendo datos...";
+            document.getElementById('riesgo-bitcoin-texto').textContent = "Obteniendo datos...";
+            document.getElementById('riesgo-bonos-texto').textContent = "Obteniendo datos...";
+            document.getElementById('riesgo-global-texto').textContent = "Obteniendo datos...";
+
+            try {
+                const [variable1Mes, variable1TresMeses, variable1Ano] = await Promise.all([
+                    obtenerAcumulado('USD', 'JPY', fechaInicioMes, hoy),
+                    obtenerAcumulado('USD', 'JPY', fechaInicio3Meses, hoy),
+                    obtenerAcumulado('USD', 'JPY', fechaInicioA√±o, hoy)
+                ]);
+                
+                const [intradiaGBPJPY, acumuladoGBPJPY, acumuladoUSDJPY, intradiaB] = await Promise.all([
+                    obtenerIntradiaGBPJPY(),
+                    obtenerAcumulado('GBP', 'JPY', fechaInicioA√±o, hoy),
+                    obtenerAcumulado('USD', 'JPY', fechaInicioA√±o, hoy),
+                    obtenerIntradiaBCHUSD()
+                ]);
+
+                const variables = [variable1Mes, variable1TresMeses, variable1Ano];
+                const maximo = 12;
+                const barraWidth = 100;
+
+                variables.forEach((acumulado, index) => {
+                    const texto = document.getElementById(['mes-actual-texto', 'ultimos-3-meses-texto', 'ano-actual-texto'][index]);
+                    const textos = [
+                        'Mes actual (c√°lculo de nuestro propio indicador):',
+                        '√öltimos 3 meses (c√°lculo de nuestro propio indicador):',
+                        'A√±o actual/acumulado (c√°lculo de nuestro propio indicador):'
+                    ];
+                    texto.innerHTML = isNaN(acumulado)
+                        ? "= NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN"
+                        : `${textos[index]} <b class="${getClaseColor(acumulado)}">${acumulado.toFixed(2)}%</b> <span style="font-weight:400">${getComentarioVariable1(acumulado)}</span>`;
+                    
+                    const valor = document.getElementById(['mes-actual-valor', 'ultimos-3-meses-valor', 'ano-actual-valor'][index]);
+                    const width = isNaN(acumulado) ? 0 : Math.min(Math.abs(acumulado) / (maximo * 3) * barraWidth, 50);
+                    valor.style.width = `${width}%`;
+                    valor.style.background = getColorBarra(acumulado);
+                    if (acumulado < 0) {
+                        valor.style.left = `calc(50% - ${width}%)`;
+                    } else {
+                        valor.style.left = "50%";
+                    }
+                });
+
+                const media = variables.reduce((a, b) => a + b, 0) / variables.length;
+                const textoMedia = document.getElementById('media-texto');
+                textoMedia.innerHTML = isNaN(media)
+                    ? "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN"
+                    : `Media (c√°lculo de nuestro propio indicador): <b class="${getClaseColor(media)}">${media.toFixed(2)}%</b> <span style="font-weight:400">${getComentarioVariable1(media)}</span>`;
+                
+                const valorMedia = document.getElementById('media-valor');
+                const widthMedia = isNaN(media) ? 0 : Math.min(Math.abs(media) / (maximo * 3) * barraWidth, 50);
+                valorMedia.style.width = `${widthMedia}%`;
+                valorMedia.style.background = getColorBarra(media);
+                if (media < 0) {
+                    valorMedia.style.left = `calc(50% - ${widthMedia}%)`;
+                } else {
+                    valorMedia.style.left = "50%";
+                }
+
+                // ===== SECCI√ìN MODIFICADA: "Bolsa (actualizado)" con variaci√≥n diaria (24h) ===== //
+                const riesgoBolsa = (isNaN(media) ? 0 : media) + (isNaN(intradiaGBPJPY) ? 0 : intradiaGBPJPY);
+                const textoRiesgoBolsa = document.getElementById('riesgo-bolsa-texto');
+                textoRiesgoBolsa.innerHTML = isNaN(riesgoBolsa)
+                    ? "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN"
+                    : `Bolsa (actualizado): <b class="${getClaseColor(riesgoBolsa)}">${riesgoBolsa.toFixed(2)}%</b> <span class="subcomentario"><span class="separador">|</span> Intrad√≠a Bolsa: ${isNaN(intradiaGBPJPY) ? 'ND' : intradiaGBPJPY.toFixed(2)}% <span class="igual">=</span> ${getComentarioBolsa(intradiaGBPJPY)} para las pr√≥ximas horas.</span>`;
+                
+                const valorRiesgoBolsa = document.getElementById('riesgo-bolsa-valor');
+                const widthRiesgoBolsa = isNaN(riesgoBolsa) ? 0 : Math.min(Math.abs(riesgoBolsa) / (maximo * 3) * barraWidth, 50);
+                valorRiesgoBolsa.style.width = `${widthRiesgoBolsa}%`;
+                valorRiesgoBolsa.style.background = getColorBarra(riesgoBolsa);
+                if (riesgoBolsa < 0) {
+                    valorRiesgoBolsa.style.left = `calc(50% - ${widthRiesgoBolsa}%)`;
+                } else {
+                    valorRiesgoBolsa.style.left = "50%";
+                }
+
+                let intradiaB_ajustado = intradiaB;
+                if (!isNaN(intradiaB)) {
+                    if (intradiaB > 0) intradiaB_ajustado = intradiaB / 3;
+                    else if (intradiaB < 0) intradiaB_ajustado = intradiaB / 2;
+                }
+                
+                const riesgoBitcoin = (isNaN(media) ? 0 : media) + (isNaN(intradiaB_ajustado) ? 0 : intradiaB_ajustado);
+                const textoRiesgoBitcoin = document.getElementById('riesgo-bitcoin-texto');
+                textoRiesgoBitcoin.innerHTML = isNaN(riesgoBitcoin)
+                    ? "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN"
+                    : `Bitcoin (actualizado): <b class="${getClaseColor(riesgoBitcoin)}">${riesgoBitcoin.toFixed(2)}%</b> <span class="subcomentario"><span class="separador">|</span> Intrad√≠a Bitcoin: ${isNaN(intradiaB) ? 'ND' : intradiaB.toFixed(2)}% <span class="igual">=</span> ${getComentarioBitcoin(intradiaB)} para las pr√≥ximas horas.</span>`;
+                
+                const valorRiesgoBitcoin = document.getElementById('riesgo-bitcoin-valor');
+                const widthRiesgoBitcoin = isNaN(riesgoBitcoin) ? 0 : Math.min(Math.abs(riesgoBitcoin) / (maximo * 3) * barraWidth, 50);
+                valorRiesgoBitcoin.style.width = `${widthRiesgoBitcoin}%`;
+                valorRiesgoBitcoin.style.background = getColorBarra(riesgoBitcoin);
+                if (riesgoBitcoin < 0) {
+                    valorRiesgoBitcoin.style.left = `calc(50% - ${widthRiesgoBitcoin}%)`;
+                } else {
+                    valorRiesgoBitcoin.style.left = "50%";
+                }
+
+                const valorRefugioReal = -media;
+                const valorRefugioMostrar = Math.abs(valorRefugioReal);
+                const esRefugioPositivo = valorRefugioReal > 0;
+                const colorRefugio = esRefugioPositivo ? "#008000" : "#d10000";
+                const claseColorRefugio = esRefugioPositivo ? "valor-verde" : "valor-rojo";
+                
+                const textoRiesgoBonos = document.getElementById('riesgo-bonos-texto');
+                textoRiesgoBonos.innerHTML = isNaN(valorRefugioMostrar)
+                    ? "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN"
+                    : `Bonos y otros activos Refugio: <b class="${claseColorRefugio}">${'+' + valorRefugioMostrar.toFixed(2)}%</b> <span class="igual">=</span> <span style="font-weight:400">${getComentarioRefugio(media)}</span>`;
+                
+                const valorRiesgoBonos = document.getElementById('riesgo-bonos-valor');
+                const widthRiesgoBonos = isNaN(valorRefugioMostrar) ? 0 : Math.min(valorRefugioMostrar / (maximo * 3) * barraWidth, 50);
+                valorRiesgoBonos.style.width = `${widthRiesgoBonos}%`;
+                valorRiesgoBonos.style.background = colorRefugio;
+                if (esRefugioPositivo) {
+                    valorRiesgoBonos.style.left = "50%";
+                } else {
+                    valorRiesgoBonos.style.left = `calc(50% - ${widthRiesgoBonos}%)`;
+                }
+
+                // ===== RIESGO GLOBAL (se mantiene igual, usa acumuladoGBPJPY anual) ===== //
+                const riesgoGlobal = Math.abs(((isNaN(acumuladoGBPJPY) ? 0 : acumuladoGBPJPY) + (isNaN(acumuladoUSDJPY) ? 0 : acumuladoUSDJPY)) * 10);
+
+                let nivelRiesgo = "";
+                let claseColor = "";
+                let claseTexto = "";
+                let widthPercentage = 0;
+
+                if (riesgoGlobal <= 35) {
+                    nivelRiesgo = "Riesgo bajo (√≥ptimo)";
+                    claseColor = "riesgo-bajo";
+                    claseTexto = "texto-riesgo-bajo";
+                    widthPercentage = Math.max((riesgoGlobal / 35) * 25, 5);
+                } else if (riesgoGlobal > 35 && riesgoGlobal < 69) {
+                    nivelRiesgo = "Riesgo alto (peligro)";
+                    claseColor = "riesgo-alto";
+                    claseTexto = "texto-riesgo-alto";
+                    widthPercentage = 25 + ((riesgoGlobal - 35) / (69 - 35)) * 35;
+                } else if (riesgoGlobal >= 69 && riesgoGlobal < 84) {
+                    nivelRiesgo = "Riesgo Muy Alto (Alerta)";
+                    claseColor = "riesgo-muy-alto";
+                    claseTexto = "texto-riesgo-muy-alto";
+                    widthPercentage = 60 + ((riesgoGlobal - 69) / (84 - 69)) * 25;
+                } else {
+                    nivelRiesgo = "ALTO RIESGO (ALERTA M√ÅXIMA)";
+                    claseColor = "riesgo-maximo";
+                    claseTexto = "texto-riesgo-maximo";
+                    widthPercentage = Math.min(85 + ((riesgoGlobal - 84) / 20) * 15, 100);
+                }
+
+                const textoRiesgoGlobal = document.getElementById('riesgo-global-texto');
+                const valorRiesgoGlobal = document.getElementById('riesgo-global-valor');
+                
+                textoRiesgoGlobal.innerHTML = isNaN(riesgoGlobal)
+                    ? "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN"
+                    : `Riesgo Global - Econ√≥mico & Geopol√≠tico: <b class="${claseTexto}">${riesgoGlobal.toFixed(2)}%</b> <span style="font-weight:400">${nivelRiesgo}</span>`;
+                
+                valorRiesgoGlobal.style.width = `${widthPercentage}%`;
+                valorRiesgoGlobal.className = "global-valor " + claseColor;
+                valorRiesgoGlobal.style.left = "0%";
+                
+                generarResumenComentado(media, riesgoBolsa, riesgoBitcoin, valorRefugioReal, riesgoGlobal);
+            } catch (error) {
+                console.error("Error general al actualizar datos:", error);
+                document.getElementById('mes-actual-texto').innerHTML = "= NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+                document.getElementById('ultimos-3-meses-texto').innerHTML = "= NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+                document.getElementById('ano-actual-texto').innerHTML = "= NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+                document.getElementById('media-texto').innerHTML = "= NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+                document.getElementById('riesgo-bolsa-texto').innerHTML = "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+                document.getElementById('riesgo-bitcoin-texto').innerHTML = "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+                document.getElementById('riesgo-bonos-texto').innerHTML = "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+                document.getElementById('riesgo-global-texto').innerHTML = "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+                document.getElementById('resumen-contenido').innerHTML = "NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN";
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-api';
+                errorDiv.textContent = 'NO HAY DATOS PARA ACTUALIZAR, SE DEBE ESPERAR LA PR√ìXIMA ACTUALIZACI√ìN';
+                document.querySelector('.container').prepend(errorDiv);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarDatos();
+            actualizarMeta();
+        });
+        setInterval(actualizarDatos, 2 * 60 * 60 * 1000); // 2 horas
+
+        function actualizarMeta() {
+            const ahora = new Date();
+            let texto = `Actualizado: <b>${formatoFechaCEST(ahora)}</b><br>
+            Pr√≥xima actualizaci√≥n: <b>${formatoHoraProxima(ahora)}</b> (actualiza cada 2 horas)<br>
+            Autores: <b>Tom Lips & VipTrader</b>`;
+            document.getElementById('meta-info').innerHTML = texto;
+        }
+
+        setInterval(actualizarMeta, 2 * 60 * 60 * 1000); // 2 horas
     </script>
 </body>
 </html>
